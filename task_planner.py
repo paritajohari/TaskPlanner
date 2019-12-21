@@ -37,9 +37,8 @@ class TaskPlanner:
 		sub_title = utils.read_input("Sub-track Title: ", Validator.stringvalidator)
 		s = SubTrack(sub_title, TaskPlanner.default_status)
 		story_obj.add_subtrack(s)
-		
-	
-	
+
+
 	def start(self):
 		TaskPlanner.show_menu()
 		choice = input("Choice: ")
@@ -54,15 +53,83 @@ class TaskPlanner:
 					self.create_subtrack(story_obj)
 				else:
 					print("Invalid story selection. Please try again.")
-
+			elif choice == "3":
+				self.show_tasks()
+				task_id = int(input("Select task ID for status change: "))
+				task_obj = self.get_task(task_id)
+				if task_obj:
+					if task_obj.task_type == "Story":
+						status_choice = input("Do you want to change status of story(1) or sub-track(2): ")
+						if status_choice == "2":
+							self.show_subtracks(task_obj)
+							subtrack_id = int(input("Select subtrack ID for status change: "))
+							subtrack_obj = task_obj.subtrack.get(subtrack_id, None)
+							if subtrack_obj:
+								new_status = input("Enter new status for sub-track: ")
+								subtrack_obj.update_status(new_status)
+							else:
+								print("Invalid sub-track selection. Please try again.")
+						else:
+							new_status = input("Enter new status for selected task: ")
+							task_obj.update_status(new_status)
+					else:
+						new_status = input("Enter new status for selected task: ")
+						task_obj.update_status(new_status)
+				else:
+					print("Invalid task selection. Please try again.")
+			elif choice == "4":
+				self.show_tasks()
+				task_id = int(input("Select task ID for status change: "))
+				task_obj = self.get_task(task_id)
+				if task_obj:
+					assignee = input("New assignee: ")
+					task_obj.update_assignee(assignee)
+				else:
+					print("Invalid task selection. Please try again.")
+			elif choice == "5":
+				assignee = input("Assignee: ")
+				self.list_tasks_by_assignee(assignee)
+			
 			TaskPlanner.show_menu()
 			choice = input("Choice: ")
-			
-			
+
+	def list_tasks_by_assignee(self, assignee):
+		for task_type, tasks in self.all_tasks.items():
+			print("Task type: " + task_type)
+			for task in tasks.values():
+				if task.assignee == assignee:
+					print("\tTitle: " + task.title)
+					print("\tSprint: ")
+				if task.task_type == "Story":
+					print("\tSub-track:")
+					for subtrack in task.subtrack.values():
+						print("\t\t", subtrack.title)
+	
+
+	def show_subtracks(self, story):
+		print("SUB_TRACK_ID\t|\tTITLE")
+		for id, st in story.subtrack.items():
+			print(id, "\t|\t", st.title)
+
+
+	def get_task(self, id):
+		for task_type, tasks in self.all_tasks.items():
+			if id in tasks:
+				return tasks[id]
+		return None
+	
+	
+	def show_tasks(self):
+		print("TASK_ID\t|\tTYPE\t|\tTITLE")
+		for task_type, tasks in self.all_tasks.items():
+			for task in tasks.values():
+				print(str(task.id) + "\t|\t" + task.task_type + "\t|\t" + task.title)
+
+
 	def show_stories(self):
-		print("Story ID\tStory Title")
+		print("STORY_ID\t|\tTITLE")
 		for story in self.all_tasks["story"].values():
-			print(str(story.id) + "\t:\t" + story.title)
+			print(str(story.id) + "\t\t|\t" + story.title)
 
 
 	def show_menu():
@@ -74,10 +141,8 @@ class TaskPlanner:
 5. Display user specific tasks
 X. Exit
 		''')
-			
-	
 		
-		
+
 if __name__ == "__main__":
 	tp = TaskPlanner()
 	'''newtask = tp.create_task()
