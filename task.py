@@ -21,10 +21,6 @@ class Task:
 	def display_task(self):
 		task = {"Title": self.title, "Creator": self.creator, "Assignee": self.assignee, "Status": self.status, "Type": self.task_type, "Due_date": self.due_date}
 		print(self.__dict__)
-		
-	def create_subtrack(self, task):
-		if self.status != "Completed":
-			self.subtrack.append(task)
 
 
 class Feature(Task):
@@ -60,7 +56,8 @@ class Story(Task):
 		self.subtrack = []
 	
 	def add_subtrack(self, subtrack):
-		self.subtrack.append(subtrack)
+		if self.status != "Completed":
+			self.subtrack.append(subtrack)
 
 class SubTrack():
 	def __init__(self, title, status):
