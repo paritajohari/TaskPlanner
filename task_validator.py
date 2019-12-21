@@ -1,8 +1,9 @@
 from dateutil.parser import parse
-from task import Task
+from task import Task, Feature, Bug
 
 class Validator:
 	
+	# class functions
 	def stringvalidator(str):		
 		if str == "" or str == None:
 			return False
@@ -35,13 +36,13 @@ class Validator:
 			return False
 	
 	def impactvalidator(impact):
-		if impact in ["Low", "Moderate", "High"]:
+		if impact in Feature.valid_impacts:
 			return True
 		else:
 			return False
 			
 	def severityvalidator(severity):
-		if severity in ["P0", "P1", "P2"]:
+		if severity in Bug.valid_severities:
 			return True
 		else:
 			return False
