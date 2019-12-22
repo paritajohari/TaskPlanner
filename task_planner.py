@@ -8,6 +8,7 @@ class TaskPlanner:
 
 	def __init__(self):
 		self.all_tasks = {"feature": {}, "bug": {}, "story": {}}
+		self.all_sprints = {}
 	
 	def create_task(self):
 		title = utils.read_input("Title: ", Validator.stringvalidator)
@@ -79,7 +80,7 @@ class TaskPlanner:
 					print("Invalid task selection. Please try again.")
 			elif choice == "4":
 				self.show_tasks()
-				task_id = int(input("Select task ID for status change: "))
+				task_id = input("Select task ID for status change: ")
 				task_obj = self.get_task(task_id)
 				if task_obj:
 					assignee = input("New assignee: ")
@@ -89,6 +90,22 @@ class TaskPlanner:
 			elif choice == "5":
 				assignee = input("Assignee: ")
 				self.list_tasks_by_assignee(assignee)
+			elif choice == "6":
+				sprint_id = input("Sprint Name: ")				
+				self.create_sprint(sprint_id)
+			elif choice == "7":
+				sprint_id = input("Sprint Name: ")				
+				self.remove_sprint(sprint_id)
+			elif choice == "8":
+				sprint_id = input("Sprint Name: ")
+				self.show_tasks()
+				task_id = input("Task ID for adding to above sprint: ")
+				self.add_task_to_sprint(sprint_id, task_id)
+			elif choice == "9":
+				sprint_id = input("Sprint Name: ")
+				self.show_tasks()
+				task_id = input("Task ID for removing from above sprint: ")
+				self.remove_task_from_sprint(sprint_id, task_id)
 			
 			TaskPlanner.show_menu()
 			choice = input("Choice: ")
@@ -99,11 +116,11 @@ class TaskPlanner:
 			for task in tasks.values():
 				if task.assignee == assignee:
 					print("\tTitle: " + task.title)
-					print("\tSprint: ")
-				if task.task_type == "Story":
-					print("\tSub-track:")
-					for subtrack in task.subtrack.values():
-						print("\t\t", subtrack.title)
+					print("\tSprint: " + task.sprint_id)
+					if task.task_type == "Story":
+						print("\tSub-track:")
+						for subtrack in task.subtrack.values():
+							print("\t\t", subtrack.title)
 	
 
 	def show_subtracks(self, story):
@@ -113,6 +130,7 @@ class TaskPlanner:
 
 
 	def get_task(self, id):
+		id = int(id)
 		for task_type, tasks in self.all_tasks.items():
 			if id in tasks:
 				return tasks[id]
@@ -130,7 +148,51 @@ class TaskPlanner:
 		print("STORY_ID\t|\tTITLE")
 		for story in self.all_tasks["story"].values():
 			print(str(story.id) + "\t\t|\t" + story.title)
+			
+			
+	def create_sprint(self, id):
+		self.all_sprints[id] = []
+		
 
+	def remove_sprint(self, id):
+		if id in self.all_sprints.keys():
+			for task_id in self.all_sprints[id]:
+				task_obj = self.get_task(task_id)
+				if task_obj:
+					self.all_sprints[id] = [task_id]
+					task_obj.update_sprint("")
+			del self.all_sprints[id]
+		else:
+			print("Sprint not found")
+			
+			
+	def add_task_to_sprint(self, id, task_id):
+		if id in self.all_sprints.keys():
+			task_obj = self.get_task(task_id)
+			if task_obj:				
+				old_sprint_id = task_obj.sprint_id
+				if old_sprint_id != "":
+					self.all_sprints[old_sprint_id].remove(task_id)
+				task_obj.update_sprint(id)
+				self.all_sprints[id].append(task_id)
+			else:
+				print("Task not found")
+		else:
+			print("Sprint not found")
+			
+
+	def remove_task_from_sprint(self, id, task_id):
+		if id in self.all_sprints.keys():
+			task_obj = self.get_task(task_id)
+			if task_obj:
+				task_obj.update_sprint("")
+				self.all_sprints[id].remove(task_id)
+			else:
+				print("Task not found")
+		else:
+			print("Sprint not found")
+			
+			
 
 	def show_menu():
 		print('''
@@ -139,6 +201,10 @@ class TaskPlanner:
 3. Change Status
 4. Change Assignee
 5. Display user specific tasks
+6. Create Sprint
+7. Remove Sprint
+8. Add task to sprint
+9. Remove task from sprint
 X. Exit
 		''')
 		

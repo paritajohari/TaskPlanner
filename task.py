@@ -4,7 +4,7 @@ class Task:
 	valid_types = ["Feature", "Bug", "Story"]
 	task_id = 0
 	
-	def __init__(self, title, creator, task_type, due_date, assignee = "", status = "Open"):
+	def __init__(self, title, creator, task_type, due_date, assignee = "", status = "Open", sprint_id = ""):
 		Task.task_id += 1
 		self.id = Task.task_id
 		self.title = title
@@ -13,9 +13,13 @@ class Task:
 		self.status = status
 		self.due_date = due_date
 		self.task_type = task_type
+		self.sprint_id = sprint_id
 	
 	def update_assignee(self, assignee):
 		self.assignee = assignee
+	
+	def update_sprint(self, sprint_id):
+		self.sprint_id = sprint_id
 		
 		
 	def display_task(self):
@@ -27,8 +31,8 @@ class Feature(Task):
 	valid_states = ["Open", "In progress", "Testing", "Deployed"]
 	valid_impacts = ["Low", "Moderate", "High"]
 	
-	def __init__(self, title, creator, task_type, due_date, summary, impact, assignee = "", status = "Open"):
-		Task.__init__(self, title, creator, task_type, due_date, assignee, status)
+	def __init__(self, title, creator, task_type, due_date, summary, impact, assignee = "", status = "Open", sprint_id = ""):
+		Task.__init__(self, title, creator, task_type, due_date, assignee, status, sprint_id)
 		self.summary = summary		
 		self.impact = impact
 	
@@ -47,8 +51,8 @@ class Bug(Task):
 	valid_states = ["Open", "In progress", "Fixed"]
 	valid_severities = ["P0", "P1", "P2"]
 	
-	def __init__(self, title, creator, task_type, due_date, severity, assignee = "", status = "Open"):
-		Task.__init__(self, title, creator, task_type, due_date, assignee, status)
+	def __init__(self, title, creator, task_type, due_date, severity, assignee = "", status = "Open", sprint_id = ""):
+		Task.__init__(self, title, creator, task_type, due_date, assignee, status, sprint_id)
 		self.severity = severity
 	
 	def update_status(self, status):
@@ -61,8 +65,8 @@ class Bug(Task):
 class Story(Task):
 	valid_states = ["Open", "In progress", "Completed"]	
 	
-	def __init__(self, title, creator, task_type, due_date, summary, assignee = "", status = "Open"):
-		Task.__init__(self, title, creator, task_type, due_date, assignee, status)
+	def __init__(self, title, creator, task_type, due_date, summary, assignee = "", status = "Open", sprint_id = ""):
+		Task.__init__(self, title, creator, task_type, due_date, assignee, status, sprint_id)
 		self.summary = summary
 		self.subtrack = {}
 		self.subtrack_count = 0
