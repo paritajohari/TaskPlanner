@@ -1,6 +1,7 @@
 from task_validator import Validator
 from task import Task, Feature, Bug, Story, SubTrack
 import utils
+import datetime
 
 class TaskPlanner:
 	# class variable
@@ -106,6 +107,10 @@ class TaskPlanner:
 				self.show_tasks()
 				task_id = input("Task ID for removing from above sprint: ")
 				self.remove_task_from_sprint(sprint_id, task_id)
+			elif choice == "10":
+				sprint_id = input("Sprint Name: ")				
+				self.get_sprint(sprint_id)
+				
 			
 			TaskPlanner.show_menu()
 			choice = input("Choice: ")
@@ -193,6 +198,42 @@ class TaskPlanner:
 			print("Sprint not found")
 			
 			
+
+	def get_sprint(self, id):
+		delayed_task = []
+		ontrack_task = []
+		if id in self.all_sprints.keys():
+			today = datetime.date.today()
+			for task_id in self.all_sprints[id]:
+				task_obj = self.get_task(task_id)
+				if task_obj:
+					task_date = datetime.datetime.strptime(task_obj.due_date, '%Y-%m-%d')
+					if task_date.date() < today:
+						delayed_task.append(task_obj.title)
+					else:
+						ontrack_task.append(task_obj.title)
+				else:
+					print("Task not found")
+			print("Spring Title: " + id)				
+			print("Ontrack tasks: ")
+			for task in ontrack_task:
+				print("\t\t" + task)
+			print("Delayed tasks: ")
+			for task in delayed_task:
+				print("\t\t" + task)
+		else:
+			print("Sprint not found")
+		
+	def get_all_sprint(self):
+		for id, tasks in self.all_sprints.items():
+			print("Sprint Name: " + id)
+			print("TASK ID\t|\tTASK TITLE")
+			for task in tasks:
+				task_obj = self.get_task(task_id)
+				if task_obj:
+					print(task_obj.id + "\t|\t" + task_obj.title)
+				else:
+					print("Task not found")
 
 	def show_menu():
 		print('''
