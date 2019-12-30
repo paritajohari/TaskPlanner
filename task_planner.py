@@ -2,6 +2,7 @@ from task_validator import Validator
 from task import Task, Feature, Bug, Story, SubTrack
 import utils
 import datetime
+from task_error import TaskError
 
 class TaskPlanner:
 	# class variable
@@ -51,10 +52,13 @@ class TaskPlanner:
 				self.show_stories()
 				story_id = int(input("Select story ID to add sub-track to: "))
 				story_obj = self.all_tasks["story"].get(story_id, None)
-				if story_obj:
-					self.create_subtrack(story_obj)
-				else:
-					print("Invalid story selection. Please try again.")
+				try:
+					if story_obj:
+						self.create_subtrack(story_obj)
+					else:
+						raise TaskError("Story not found")
+				except TaskError as e:
+					print("Invalid story selection. Please try again.\n", e)
 			elif choice == "3":
 				self.show_tasks()
 				task_id = int(input("Select task ID for status change: "))
